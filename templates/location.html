@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+    <title>Share Location</title>
+</head>
+<body>
+    <script>
+        function updateLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                fetch(`/location/{{ unique_url }}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    })
+                }).then(response => response.text()).then(data => {
+                    console.log(data);  // Optional: log the response for debugging
+                }).catch(error => {
+                    console.error('Error sending location data: ', error);
+                });
+            }, 
+            function(error) {
+                console.error('Error obtaining geolocation: ', error);
+            }
+        );
+    } else {
+        console.error('Geolocation is not supported by this browser.');
+    }
+}
+
+// Initial location update
+updateLocation();
+
+// Update location every hour (3600000 milliseconds)
+setInterval(updateLocation, 3600000);
+
+    </script>
+</body>
+</html>
